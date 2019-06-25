@@ -62,4 +62,32 @@ class TimeRangeExtractorTest < Minitest::Test
 
     assert_nil result
   end
+
+  def test_should_handle_line_breaks
+    result = TimeRangeExtractor.call(<<~TEXT)
+      Hi there,
+
+      Can you call me from 4-5pm
+    TEXT
+
+    assert_equal Time.parse('4pm'), result.begin
+    assert_equal Time.parse('5pm'), result.end
+  end
+
+  def test_should_return_times_in_current_time_zone_if_set
+    Time.use_zone 'America/Vancouver' do
+      result = TimeRangeExtractor.call("Call me at 5pm")
+
+      assert_equal Time.zone.parse('5pm'), result.begin
+    end
+  end
+
+  def test_should_return_times_from_other_time_zones_in_current_time_zone_if_set
+    Time.use_zone 'America/Vancouver' do
+      result = TimeRangeExtractor.call("Call me at 5pm EST")
+
+      assert_equal Time.parse('5pm EST').utc, result.begin.utc
+      assert_equal 'America/Vancouver', result.begin.time_zone.name
+    end
+  end
 end
