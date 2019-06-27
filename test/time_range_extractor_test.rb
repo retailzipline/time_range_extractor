@@ -55,12 +55,32 @@ class TimeRangeExtractorTest < Minitest::Test
       assert_equal Time.parse(range[1]), result.end
     end
   end
+
+  [
+    "5 america",
+    "5:00:00america",
+    "PST",
+    "2005 america"
+  ].each do |not_a_time|
+    define_method "test_should_correctly_ignore_#{not_a_time}" do
+      result = TimeRangeExtractor.call("Random text #{not_a_time} for context")
+
+      assert_nil result
+    end
+  end
   # rubocop:enable Style/WordArray
 
   def test_should_return_nil_if_no_times_found
     result = TimeRangeExtractor.call("Call me today please")
 
     assert_nil result
+  end
+
+  def test_should_only_return_the_first_match
+    result = TimeRangeExtractor.call("The meeting is from 4-5pm but we will follow up from 6-7pm")
+
+    assert_equal Time.parse('4pm'), result.begin
+    assert_equal Time.parse('5pm'), result.end
   end
 
   def test_should_handle_line_breaks
