@@ -114,7 +114,7 @@ class TimeRangeExtractorTest < Minitest::Test
     Time.use_zone 'America/Vancouver' do
       result = TimeRangeExtractor.call("Call me at 5pm EST")
 
-      assert_equal Time.parse('5pm EST').utc, result.begin.utc
+      assert_equal Time.zone.parse('5pm EST').utc, result.begin.utc
       assert_equal 'America/Vancouver', result.begin.time_zone.name
     end
   end
