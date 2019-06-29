@@ -15,7 +15,7 @@ class MatchResult
       if end_period.casecmp("pm") == 0 && (start_t > end_t || (end_t == 12 && start_t < end_t))
         "am"
       else
-        "pm"
+        end_period
       end
     end
   end
