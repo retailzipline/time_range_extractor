@@ -18,7 +18,11 @@ class Parser
     start_time = time_from_string(match_result.start_time_string)
     end_time = time_from_string(match_result.end_time_string)
 
-    start_time..end_time
+    if start_time <= end_time
+      start_time..end_time
+    elsif start_time > end_time
+      start_time..(end_time + 1.day)
+    end
   end
 
   private

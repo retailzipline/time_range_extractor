@@ -71,6 +71,13 @@ class TimeRangeExtractorTest < Minitest::Test
   end
   # rubocop:enable Style/WordArray
 
+  def test_should_span_days_if_necessary
+    result = TimeRangeExtractor.call("Random text 11pm - 1am for context")
+
+    assert_equal Time.parse('11pm'), result.begin
+    assert_equal Time.parse('1am') + 1.day, result.end
+  end
+
   def test_should_return_nil_if_no_times_found
     result = TimeRangeExtractor.call("Call me today please")
 
