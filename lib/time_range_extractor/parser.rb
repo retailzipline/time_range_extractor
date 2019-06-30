@@ -8,8 +8,8 @@ class Parser
     (
       (?<start_time>(2[0-4]|1[0-9]|[1-9]):?([0-5][0-9])?)\s?
       (?<start_period>am|pm)?\s?
-      (to|-|until)\s?
-    )?
+      (to|-|until|\s)\s?
+    )
     (?<end_time>(2[0-4]|1[0-9]|[1-9]):?([0-5][0-9])?)?\s?
     (?<end_period>am|pm)\s?
     (?<time_zone>(

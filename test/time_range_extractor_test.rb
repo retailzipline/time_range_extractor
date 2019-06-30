@@ -17,13 +17,8 @@ class TimeRangeExtractorTest < Minitest::Test
     '5:01 pm',
     '5:00 AM CDT'
   ].each do |time_string|
-    define_method "test_should_handle_#{time_string.gsub(' ', '_')}" do
-      result = TimeRangeExtractor.call("Call at #{time_string} please")
-
-      time = Time.parse(time_string)
-
-      assert_equal time, result.begin
-      assert_equal time, result.end
+    define_method "test_should_not_handle_#{time_string.gsub(' ', '_')}" do
+      assert_nil TimeRangeExtractor.call("Call at #{time_string} please")
     end
   end
 
@@ -112,24 +107,26 @@ class TimeRangeExtractorTest < Minitest::Test
   end
 
   def test_should_handle_times_at_the_start_of_the_string
-    result = TimeRangeExtractor.call('8am')
+    result = TimeRangeExtractor.call('8-8:30am')
 
-    time = Time.parse('8am')
-    assert_equal time, result.begin
-    assert_equal time, result.end
+    assert_equal Time.parse('8am'), result.begin
+    assert_equal Time.parse('8:30am'), result.end
   end
 
   def test_should_return_times_in_current_time_zone_if_set
     Time.use_zone 'America/Vancouver' do
-      result = TimeRangeExtractor.call('Call me at 5pm')
+      result = TimeRangeExtractor.call('Call me from 5-6pm')
 
-      assert_equal Time.zone.parse('5pm'), result.begin
+      zone = Time.zone
+
+      assert_equal zone.parse('5pm'), result.begin
+      assert_equal zone.parse('6pm'), result.end
     end
   end
 
   def test_should_return_times_from_other_time_zones_in_current_time_zone_if_set
     Time.use_zone 'America/Vancouver' do
-      result = TimeRangeExtractor.call('Call me at 5pm EST')
+      result = TimeRangeExtractor.call('Call me from 5-6pm EST')
 
       begins_at = result.begin
 
@@ -141,8 +138,7 @@ class TimeRangeExtractorTest < Minitest::Test
   def test_should_support_valid_examples
     [
       'Call: Launch meeting (9:15-10:15am)',
-      'Watch for risks from 6pm until 7:30pm CET',
-      'Pick me up at 8am'
+      'Watch for risks from 6pm until 7:30pm CET'
     ].each do |text_with_valid_time|
       assert_kind_of Range, TimeRangeExtractor.call(text_with_valid_time)
     end

@@ -6,7 +6,7 @@ class MatchResult
   end
 
   def valid?
-    @match_data && (start_time.present? || end_time.present?)
+    @match_data && (start_time.present? && end_time.present?)
   end
 
   def start_time
@@ -32,16 +32,10 @@ class MatchResult
   end
 
   def start_time_string
-    if range?
-      [start_time, start_period, time_zone].compact.join(' ')
-    else
-      end_time && [end_time, end_period, time_zone].compact.join(' ')
-    end
+    [start_time, start_period, time_zone].compact.join(' ')
   end
 
   def end_time_string
-    return start_time_string unless range?
-
     [end_time, end_period, time_zone].compact.join(' ')
   end
 
