@@ -140,7 +140,7 @@ class TimeRangeExtractorTest < Minitest::Test
 
   def test_should_support_valid_examples
     [
-      'Call: Launch meeting (9:15-10:15am PST)',
+      'Call: Launch meeting (9:15-10:15am)',
       'Watch for risks from 6pm until 7:30pm CET',
       'Pick me up at 8am'
     ].each do |text_with_valid_time|
@@ -149,6 +149,7 @@ class TimeRangeExtractorTest < Minitest::Test
   end
 
   [
+    'to',
     'until',
     '-'
   ].each do |separator|

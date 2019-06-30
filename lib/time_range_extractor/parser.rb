@@ -8,7 +8,7 @@ class Parser
     (
       (?<start_time>[1-2]?[0-9]:?[0-9]{2}?)\s?
       (?<start_period>am|pm)?\s?
-      (-|until)\s?
+      (to|-|until)\s?
     )?
     (?<end_time>[1-2]?[0-9]:?[0-9]{2}?)?\s?
     (?<end_period>am|pm)\s?
