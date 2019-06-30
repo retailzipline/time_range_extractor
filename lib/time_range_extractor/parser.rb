@@ -6,11 +6,11 @@ class Parser
   PATTERN = /
     (\A|\s|\() # space or round bracket, to support: "Call Jim (8-9pm)"
     (
-      (?<start_time>[1-2]?[0-9]:?[0-9]{2}?)\s?
+      (?<start_time>(2[0-4]|1[0-9]|[1-9]):?([0-5][0-9])?)\s?
       (?<start_period>am|pm)?\s?
       (to|-|until)\s?
     )?
-    (?<end_time>[1-2]?[0-9]:?[0-9]{2}?)?\s?
+    (?<end_time>(2[0-4]|1[0-9]|[1-9]):?([0-5][0-9])?)?\s?
     (?<end_period>am|pm)\s?
     (?<time_zone>(
       [ABCDEFGHIJKLMNOPRSTUVWY]
