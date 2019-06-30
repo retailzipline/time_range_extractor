@@ -30,4 +30,8 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundler", "~> 2.0"
   spec.add_development_dependency "rake", "~> 10.0"
   spec.add_development_dependency "minitest", "~> 5.0"
+  spec.add_development_dependency "guard", ">= 2"
+  spec.add_development_dependency "guard-minitest", ">= 2.4"
+  spec.add_development_dependency "guard-reek", ">= 1.2.0"
+  spec.add_development_dependency "guard-rubocop", ">= 1.3.0"
 end
