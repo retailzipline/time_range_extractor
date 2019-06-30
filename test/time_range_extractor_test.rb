@@ -17,7 +17,7 @@ class TimeRangeExtractorTest < Minitest::Test
     '5:01 pm',
     '5:00 AM CDT'
   ].each do |time_string|
-    define_method "test_should_handle_simple_case_of_#{time_string}" do
+    define_method "test_should_handle_#{time_string.gsub(' ', '_')}" do
       result = TimeRangeExtractor.call("Call at #{time_string} please")
 
       time = Time.parse(time_string)
@@ -38,7 +38,7 @@ class TimeRangeExtractorTest < Minitest::Test
     ['4:10 pm - 5:00 pm EST', ['4:10pm EST', '5pm EST']],
     ['11am-1pm', ['11am', '1pm']]
   ].each do |time_string, range|
-    define_method "test_should_handle_simple_range_case_of_#{time_string}" do
+    define_method "test_should_handle_#{time_string.gsub(' ', '_')}" do
       result = TimeRangeExtractor.call("Call at #{time_string} please")
 
       assert_equal Time.parse(range[0]), result.begin
@@ -51,7 +51,7 @@ class TimeRangeExtractorTest < Minitest::Test
     ['11-12pm', ['11am', '12pm']],
     ['12:10-12:30pm', ['12:10pm', '12:30pm']]
   ].each do |time_string, range|
-    define_method "test_should_handle_complex_range_case_of_#{time_string}" do
+    define_method "test_should_handle_#{time_string.gsub(' ', '_')}" do
       result = TimeRangeExtractor.call("Call at #{time_string} please")
 
       assert_equal Time.parse(range[0]), result.begin
@@ -64,9 +64,13 @@ class TimeRangeExtractorTest < Minitest::Test
     '5:00:00america',
     'PST',
     '2005 america',
-    '5:1 pm'
+    '5:1 pm',
+    '5:61 pm',
+    '25:10',
+    '30:10 pm',
+    '0:00'
   ].each do |not_a_time|
-    define_method "test_should_correctly_ignore_#{not_a_time}" do
+    define_method "test_should_ignore_#{not_a_time.gsub(' ', '_')}" do
       result = TimeRangeExtractor.call("Random text #{not_a_time} for context")
 
       assert_nil result
@@ -123,6 +127,25 @@ class TimeRangeExtractorTest < Minitest::Test
 
       assert_equal Time.zone.parse('5pm EST').utc, begins_at.utc
       assert_equal 'America/Vancouver', begins_at.time_zone.name
+    end
+  end
+
+  def test_should_support_valid_examples
+    [
+      'Call: Launch meeting (9:15-10:15am PST)',
+      'Watch for risks from 6pm until 7:30pm CET',
+      'Pick me up at 8am'
+    ].each do |text_with_valid_time|
+      assert_kind_of Range, TimeRangeExtractor.call(text_with_valid_time)
+    end
+  end
+
+  [
+    'until',
+    '-'
+  ].each do |separator|
+    define_method "test_should_support_the_#{separator}_separator" do
+      refute_kind_of Range, TimeRangeExtractor.call("8#{separator}9pm")
     end
   end
 end

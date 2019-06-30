@@ -24,3 +24,7 @@ Style/Documentation:
 # Prefer two line empty methods
 Style/EmptyMethod:
   EnforcedStyle: expanded
+
+Metrics/ClassLength:
+  Exclude:
+    - test/**/*

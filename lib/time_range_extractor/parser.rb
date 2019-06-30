@@ -4,15 +4,21 @@
 # basis for the DateTime generation.
 class Parser
   PATTERN = /
-    [\s\(] # space or round bracket, to support: "Call Jim (8-9pm)"
+    (\s|\() # space or round bracket, to support: "Call Jim (8-9pm)"
     (
-      (?<start_time>[0-9]{1,2}:?[0-9]{2}?)\s?
+      (?<start_time>[1-2]?[0-9]:?[0-9]{2}?)\s?
       (?<start_period>am|pm)?\s?
       (-|until)\s?
     )?
-    (?<end_time>[0-9]{1,2}:?[0-9]{2}?)?\s?
+    (?<end_time>[1-2]?[0-9]:?[0-9]{2}?)?\s?
     (?<end_period>am|pm)\s?
-    (?<time_zone>[a-z][sd]t)?\b
+    (?<time_zone>(
+      [ABCDEFGHIJKLMNOPRSTUVWY]
+      [A-Z]
+      [ACDEGHKLMNORSTUVW]?
+      [CDNSTW]?
+      [T]?
+    ))?\b
   /xi.freeze
 
   def initialize(text, date: Date.current)
@@ -21,7 +27,8 @@ class Parser
   end
 
   def call
-    result = MatchResult.new(PATTERN.match(@text))
+    match = PATTERN.match(@text)
+    result = MatchResult.new(match)
     return nil unless result.valid?
 
     time_range_from(result)
@@ -38,10 +45,12 @@ class Parser
     elsif start_time > end_time
       start_time..(end_time + 1.day)
     end
+  rescue ArgumentError
+    nil
   end
 
   def time_from_string(string)
-    time_parser.parse("#{@date.to_s(:db)} #{string}")
+    time_parser.parse(string, @date.to_time)
   end
 
   # :reek:UtilityFunction so that we can optionally include ActiveSupport
