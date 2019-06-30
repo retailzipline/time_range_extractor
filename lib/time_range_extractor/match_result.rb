@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class MatchResult
   def initialize(match_data)
     @match_data = match_data
@@ -9,7 +11,7 @@ class MatchResult
 
   def start_period
     @start_period ||= match_data[:start_period].presence || begin
-      force_start_period_to_am? ? "am" : end_period
+      force_start_period_to_am? ? 'am' : end_period
     end
   end
 
@@ -49,7 +51,7 @@ class MatchResult
     start_t = start_time.to_i
     end_t = end_time.to_i
 
-    end_period.casecmp("pm") == 0 &&
+    end_period.casecmp('pm') == 0 &&
       (start_t > end_t || (end_t == 12 && start_t < end_t))
   end
 

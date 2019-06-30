@@ -1,0 +1,26 @@
+AllCops:
+  TargetRubyVersion: 2.5.3
+  Exclude:
+    - bin/*
+    - tmp/**/*
+    - Rakefile
+    - Gemfile
+    - '*.gemspec'
+    - Guardfile
+
+# Prefer x > 0 vs x.positive?
+Style/NumericPredicate:
+  EnforcedStyle: comparison
+
+# Raise vs Fail seems to be an on-going debate with no significant impact.
+# Fixing our style to raise.
+Style/SignalException:
+  EnforcedStyle: only_raise
+
+# Small enough project that documentation can just be in the README
+Style/Documentation:
+  Enabled: false
+
+# Prefer two line empty methods
+Style/EmptyMethod:
+  EnforcedStyle: expanded

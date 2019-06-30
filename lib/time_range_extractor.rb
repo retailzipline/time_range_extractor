@@ -1,10 +1,12 @@
-require "time"
-require "date"
-require "active_support/time"
+# frozen_string_literal: true
 
-require "time_range_extractor/match_result"
-require "time_range_extractor/parser"
-require "time_range_extractor/version"
+require 'time'
+require 'date'
+require 'active_support/time'
+
+require 'time_range_extractor/match_result'
+require 'time_range_extractor/parser'
+require 'time_range_extractor/version'
 
 module TimeRangeExtractor
   class Error < StandardError; end
