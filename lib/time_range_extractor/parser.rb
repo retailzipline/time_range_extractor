@@ -4,7 +4,7 @@
 # basis for the DateTime generation.
 class Parser
   PATTERN = /
-    (\s|\() # space or round bracket, to support: "Call Jim (8-9pm)"
+    (\A|\s|\() # space or round bracket, to support: "Call Jim (8-9pm)"
     (
       (?<start_time>[1-2]?[0-9]:?[0-9]{2}?)\s?
       (?<start_period>am|pm)?\s?

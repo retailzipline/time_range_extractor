@@ -111,6 +111,14 @@ class TimeRangeExtractorTest < Minitest::Test
     assert_equal Time.parse('5pm'), result.end
   end
 
+  def test_should_handle_times_at_the_start_of_the_string
+    result = TimeRangeExtractor.call('8am')
+
+    time = Time.parse('8am')
+    assert_equal time, result.begin
+    assert_equal time, result.end
+  end
+
   def test_should_return_times_in_current_time_zone_if_set
     Time.use_zone 'America/Vancouver' do
       result = TimeRangeExtractor.call('Call me at 5pm')
@@ -145,7 +153,11 @@ class TimeRangeExtractorTest < Minitest::Test
     '-'
   ].each do |separator|
     define_method "test_should_support_the_#{separator}_separator" do
-      refute_kind_of Range, TimeRangeExtractor.call("8#{separator}9pm")
+      result = TimeRangeExtractor.call("8#{separator}9pm")
+
+      assert_kind_of Range, result
+      assert_equal Time.parse('8pm'), result.begin
+      assert_equal Time.parse('9pm'), result.end
     end
   end
 end
