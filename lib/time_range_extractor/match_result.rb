@@ -9,14 +9,7 @@ class MatchResult
 
   def start_period
     @start_period ||= match_data[:start_period].presence || begin
-      start_t = start_time.to_i
-      end_t = end_time.to_i
-
-      if end_period.casecmp("pm") == 0 && (start_t > end_t || (end_t == 12 && start_t < end_t))
-        "am"
-      else
-        end_period
-      end
+      force_start_period_to_am? ? "am" : end_period
     end
   end
 
@@ -50,6 +43,14 @@ class MatchResult
 
   def range?
     start_time.present? && end_time.present?
+  end
+
+  def force_start_period_to_am?
+    start_t = start_time.to_i
+    end_t = end_time.to_i
+
+    end_period.casecmp("pm") == 0 &&
+      (start_t > end_t || (end_t == 12 && start_t < end_t))
   end
 
   attr_reader :match_data

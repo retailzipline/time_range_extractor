@@ -36,7 +36,7 @@ class TimeRangeExtractorTest < Minitest::Test
     ["4:10 pm - 5:00 pm EST", ["4:10pm EST", "5pm EST"]],
     ["11am-1pm", ["11am", "1pm"]]
   ].each do |time_string, range|
-    define_method "test_should_properly_handle_the_simple_range_case_of_#{time_string}" do
+    define_method "test_should_handle_simple_range_case_of_#{time_string}" do
       result = TimeRangeExtractor.call("Call at #{time_string} please")
 
       assert_equal Time.parse(range[0]), result.begin
@@ -49,7 +49,7 @@ class TimeRangeExtractorTest < Minitest::Test
     ["11-12pm", ["11am", "12pm"]],
     ["12:10-12:30pm", ["12:10pm", "12:30pm"]]
   ].each do |time_string, range|
-    define_method "test_should_properly_handle_the_complex_range_case_of_#{time_string}" do
+    define_method "test_should_handle_complex_range_case_of_#{time_string}" do
       result = TimeRangeExtractor.call("Call at #{time_string} please")
 
       assert_equal Time.parse(range[0]), result.begin
@@ -85,7 +85,9 @@ class TimeRangeExtractorTest < Minitest::Test
   end
 
   def test_should_only_return_the_first_match
-    result = TimeRangeExtractor.call("The meeting is from 4-5pm but we will follow up from 6-7pm")
+    result = TimeRangeExtractor.call(
+      "The meeting is from 4-5pm but we will follow up from 6-7pm"
+    )
 
     assert_equal Time.parse('4pm'), result.begin
     assert_equal Time.parse('5pm'), result.end
@@ -114,8 +116,10 @@ class TimeRangeExtractorTest < Minitest::Test
     Time.use_zone 'America/Vancouver' do
       result = TimeRangeExtractor.call("Call me at 5pm EST")
 
-      assert_equal Time.zone.parse('5pm EST').utc, result.begin.utc
-      assert_equal 'America/Vancouver', result.begin.time_zone.name
+      begins_at = result.begin
+
+      assert_equal Time.zone.parse('5pm EST').utc, begins_at.utc
+      assert_equal 'America/Vancouver', begins_at.time_zone.name
     end
   end
 end
