@@ -5,6 +5,10 @@ class MatchResult
     @match_data = match_data
   end
 
+  def valid?
+    @match_data && (start_time.present? || end_time.present?)
+  end
+
   def start_time
     match_data[:start_time]
   end

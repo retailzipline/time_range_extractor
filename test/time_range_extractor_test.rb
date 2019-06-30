@@ -63,7 +63,8 @@ class TimeRangeExtractorTest < Minitest::Test
     '5 america',
     '5:00:00america',
     'PST',
-    '2005 america'
+    '2005 america',
+    '5:1 pm'
   ].each do |not_a_time|
     define_method "test_should_correctly_ignore_#{not_a_time}" do
       result = TimeRangeExtractor.call("Random text #{not_a_time} for context")

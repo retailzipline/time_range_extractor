@@ -4,13 +4,13 @@
 # basis for the DateTime generation.
 class Parser
   PATTERN = /
-    (?i)
+    [\s\(] # space or round bracket, to support: "Call Jim (8-9pm)"
     (
-      (?<start_time>[0-9]{1,2}:?[0-9]{0,2}?)\s?
+      (?<start_time>[0-9]{1,2}:?[0-9]{2}?)\s?
       (?<start_period>am|pm)?\s?
       (-|until)\s?
     )?
-    (?<end_time>[0-9]{1,2}:?[0-9]{0,2})?\s?
+    (?<end_time>[0-9]{1,2}:?[0-9]{2}?)?\s?
     (?<end_period>am|pm)\s?
     (?<time_zone>[a-z][sd]t)?\b
   /xi.freeze
@@ -21,8 +21,10 @@ class Parser
   end
 
   def call
-    result = PATTERN.match(@text)
-    result && time_range_from(MatchResult.new(result))
+    result = MatchResult.new(PATTERN.match(@text))
+    return nil unless result.valid?
+
+    time_range_from(result)
   end
 
   private
