@@ -29,7 +29,7 @@ module TimeRangeExtractor
 
     def call
       match = PATTERN.match(@text)
-      result = MatchResult.new(match)
+      result = TimeZoneAdjustedMatchResult.new(match)
       return nil unless result.valid?
 
       time_range_from(result)

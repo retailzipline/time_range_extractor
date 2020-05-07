@@ -35,9 +35,21 @@ class TimeRangeExtractorTest < Minitest::Test
   ].each do |time_string, range|
     define_method "test_should_handle_#{time_string.gsub(' ', '_')}" do
       result = TimeRangeExtractor.call("Call at #{time_string} please")
-
-      assert_equal Time.parse(range[0]), result.begin
       assert_equal Time.parse(range[1]), result.end
+      assert_equal Time.parse(range[0]), result.begin
+    end
+  end
+
+  # Australian Time Zone mapping to work around ruby bug
+
+  [
+    ['4 pm - 5 pm AEST', ['16:00:00 +1000', '17:00:00 +1000']]
+  ].each do |time_string, range|
+    define_method "test_should_map_australian_zones_for_#{time_string.gsub(' ', '_')}" do
+      result = TimeRangeExtractor.call("Call at #{time_string} please")
+      puts Time.parse(range[1])
+      assert_equal Time.parse(range[1]), result.end
+      assert_equal Time.parse(range[0]), result.begin
     end
   end
 
