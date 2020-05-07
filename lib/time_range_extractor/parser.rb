@@ -56,7 +56,7 @@ module TimeRangeExtractor
 
     # :reek:UtilityFunction so that we can optionally include ActiveSupport
     def time_parser
-      ::Time.zone || ::Time
+      ::Time.zone || ::DateTime
     end
   end
 end
