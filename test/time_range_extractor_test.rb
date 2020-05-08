@@ -35,9 +35,23 @@ class TimeRangeExtractorTest < Minitest::Test
   ].each do |time_string, range|
     define_method "test_should_handle_#{time_string.gsub(' ', '_')}" do
       result = TimeRangeExtractor.call("Call at #{time_string} please")
+      assert_equal time_parser.parse(range[1]), result.end
+      assert_equal time_parser.parse(range[0]), result.begin
+    end
+  end
 
-      assert_equal Time.parse(range[0]), result.begin
-      assert_equal Time.parse(range[1]), result.end
+  # Australian Time Zone mapping to work around ruby bug
+  [
+    ['4 pm - 5 pm AEST', ['16:00:00 EAST', '17:00:00 EAST']],
+    ['4 pm - 5 pm AEDT', ['16:00:00 EADT', '17:00:00 EADT']],
+    ['4 pm - 5 pm AWST', ['16:00:00 WAST', '17:00:00 WAST']],
+    ['4 pm - 5 pm AWDT', ['16:00:00 WADT', '17:00:00 WADT']]
+  ].each do |time_string, range|
+    define_method "test_should_map_zones_for_#{time_string.gsub(' ', '_')}" do
+      result = TimeRangeExtractor.call("Call at #{time_string} please")
+
+      assert_equal time_parser.parse(range[1]), result.end
+      assert_equal time_parser.parse(range[0]), result.begin
     end
   end
 
@@ -49,8 +63,8 @@ class TimeRangeExtractorTest < Minitest::Test
     define_method "test_should_handle_#{time_string.gsub(' ', '_')}" do
       result = TimeRangeExtractor.call("Call at #{time_string} please")
 
-      assert_equal Time.parse(range[0]), result.begin
-      assert_equal Time.parse(range[1]), result.end
+      assert_equal time_parser.parse(range[0]), result.begin
+      assert_equal time_parser.parse(range[1]), result.end
     end
   end
 
@@ -76,8 +90,8 @@ class TimeRangeExtractorTest < Minitest::Test
   def test_should_span_days_if_necessary
     result = TimeRangeExtractor.call('Random text 11pm - 1am for context')
 
-    assert_equal Time.parse('11pm'), result.begin
-    assert_equal Time.parse('1am') + 1.day, result.end
+    assert_equal time_parser.parse('11pm'), result.begin
+    assert_equal time_parser.parse('1am') + 1.day, result.end
   end
 
   def test_should_return_nil_if_no_times_found
@@ -91,8 +105,8 @@ class TimeRangeExtractorTest < Minitest::Test
       'The meeting is from 4-5pm but we will follow up from 6-7pm'
     )
 
-    assert_equal Time.parse('4pm'), result.begin
-    assert_equal Time.parse('5pm'), result.end
+    assert_equal time_parser.parse('4pm'), result.begin
+    assert_equal time_parser.parse('5pm'), result.end
   end
 
   def test_should_handle_line_breaks
@@ -102,15 +116,15 @@ class TimeRangeExtractorTest < Minitest::Test
       Can you call me from 4-5pm
     TEXT
 
-    assert_equal Time.parse('4pm'), result.begin
-    assert_equal Time.parse('5pm'), result.end
+    assert_equal time_parser.parse('4pm'), result.begin
+    assert_equal time_parser.parse('5pm'), result.end
   end
 
   def test_should_handle_times_at_the_start_of_the_string
     result = TimeRangeExtractor.call('8-8:30am')
 
-    assert_equal Time.parse('8am'), result.begin
-    assert_equal Time.parse('8:30am'), result.end
+    assert_equal time_parser.parse('8am'), result.begin
+    assert_equal time_parser.parse('8:30am'), result.end
   end
 
   def test_should_return_times_in_current_time_zone_if_set
@@ -153,8 +167,14 @@ class TimeRangeExtractorTest < Minitest::Test
       result = TimeRangeExtractor.call("8#{separator}9pm")
 
       assert_kind_of Range, result
-      assert_equal Time.parse('8pm'), result.begin
-      assert_equal Time.parse('9pm'), result.end
+      assert_equal time_parser.parse('8pm'), result.begin
+      assert_equal time_parser.parse('9pm'), result.end
     end
+  end
+
+  private
+
+  def time_parser
+    DateTime
   end
 end

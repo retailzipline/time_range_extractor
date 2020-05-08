@@ -29,7 +29,7 @@ module TimeRangeExtractor
 
     def call
       match = PATTERN.match(@text)
-      result = MatchResult.new(match)
+      result = TimeZoneAdjustedMatchResult.new(match)
       return nil unless result.valid?
 
       time_range_from(result)
@@ -56,7 +56,7 @@ module TimeRangeExtractor
 
     # :reek:UtilityFunction so that we can optionally include ActiveSupport
     def time_parser
-      ::Time.zone || ::Time
+      ::Time.zone || ::DateTime
     end
   end
 end

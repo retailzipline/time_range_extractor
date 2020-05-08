@@ -5,6 +5,7 @@ require 'date'
 require 'active_support/time'
 
 require 'time_range_extractor/match_result'
+require 'time_range_extractor/time_zone_adjusted_match_result'
 require 'time_range_extractor/parser'
 require 'time_range_extractor/version'
 
