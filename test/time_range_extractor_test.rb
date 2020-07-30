@@ -15,7 +15,10 @@ class TimeRangeExtractorTest < Minitest::Test
     '5:20pm',
     '5:20pm EST',
     '5:01 pm',
-    '5:00 AM CDT'
+    '5:00 AM CDT',
+    'Thu, 30 Jul 2020 5:00',
+    'Thu, 30 Jul 2020 5:00pm',
+    'Thu, 30 Jul 2020 5:00pm UTC',
   ].each do |time_string|
     define_method "test_should_not_handle_#{time_string.gsub(' ', '_')}" do
       assert_nil TimeRangeExtractor.call("Call at #{time_string} please")
