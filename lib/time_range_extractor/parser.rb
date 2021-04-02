@@ -25,7 +25,7 @@ module TimeRangeExtractor
     def initialize(text, date: Date.current)
       @text = text
       @date = date
-      @dst = date.to_time.dst?
+      @dst = date.to_time.in_time_zone('America/New_York').dst?
     end
 
     def call
