@@ -3,6 +3,8 @@
 require 'test_helper'
 
 class TimeRangeExtractorTest < Minitest::Test
+  NON_DST_DATE = Date.parse('Jan 1, 2021').freeze
+
   def test_that_it_has_a_version_number
     refute_nil ::TimeRangeExtractor::VERSION
   end
@@ -18,7 +20,7 @@ class TimeRangeExtractorTest < Minitest::Test
     '5:00 AM CDT',
     'Thu, 30 Jul 2020 5:00',
     'Thu, 30 Jul 2020 5:00pm',
-    'Thu, 30 Jul 2020 5:00pm UTC',
+    'Thu, 30 Jul 2020 5:00pm UTC'
   ].each do |time_string|
     define_method "test_should_not_handle_#{time_string.gsub(' ', '_')}" do
       assert_nil TimeRangeExtractor.call("Call at #{time_string} please")
@@ -37,7 +39,11 @@ class TimeRangeExtractorTest < Minitest::Test
     ['11am-1pm', ['11am', '1pm']]
   ].each do |time_string, range|
     define_method "test_should_handle_#{time_string.gsub(' ', '_')}" do
-      result = TimeRangeExtractor.call("Call at #{time_string} please")
+      result = TimeRangeExtractor.call(
+        "Call at #{time_string} please",
+        date: NON_DST_DATE
+      )
+
       assert_equal time_parser.parse(range[1]), result.end
       assert_equal time_parser.parse(range[0]), result.begin
     end
@@ -98,7 +104,10 @@ class TimeRangeExtractorTest < Minitest::Test
   end
 
   def test_should_find_the_right_time_value_with_other_numbers
-    result = TimeRangeExtractor.call('Option 1: 12:00pm – 1:00pm EST')
+    result = TimeRangeExtractor.call(
+      'Option 1: 12:00pm – 1:00pm EST',
+      date: NON_DST_DATE
+    )
 
     refute_nil result
     assert_equal time_parser.parse('12:00pm EST'), result.begin
@@ -151,13 +160,22 @@ class TimeRangeExtractorTest < Minitest::Test
 
   def test_should_return_times_from_other_time_zones_in_current_time_zone_if_set
     Time.use_zone 'America/Vancouver' do
-      result = TimeRangeExtractor.call('Call me from 5-6pm EST')
+      result = TimeRangeExtractor.call('Call at 5-6pm EST', date: NON_DST_DATE)
 
       begins_at = result.begin
 
-      assert_equal Time.zone.parse('5pm EST').utc, begins_at.utc
+      assert_equal Time.zone.parse("#{NON_DST_DATE} 5pm EST").utc, begins_at.utc
       assert_equal 'America/Vancouver', begins_at.time_zone.name
     end
+  end
+
+  def test_should_fix_time_zones_if_wrong_dst_one_used
+    daylight_date = Date.parse('April 1, 2021')
+    result = TimeRangeExtractor.call('Call me 5-6pm EST', date: daylight_date)
+
+    begins_at = result.begin
+
+    assert_equal DateTime.parse('5pm EDT').utc, begins_at.utc
   end
 
   def test_should_support_valid_examples

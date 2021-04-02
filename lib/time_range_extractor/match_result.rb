@@ -2,8 +2,11 @@
 
 module TimeRangeExtractor
   class MatchResult
-    def initialize(match_data)
+    DST_AFFECTED_TIME_ZONES = %w[EST CST MST PST EDT CDT MDT PDT].freeze
+
+    def initialize(match_data, dst: false)
       @match_data = match_data
+      @dst = dst
     end
 
     def valid?
@@ -29,7 +32,7 @@ module TimeRangeExtractor
     end
 
     def time_zone
-      match_data[:time_zone]
+      correct_dst_timezone(match_data[:time_zone])
     end
 
     def start_time_string
@@ -52,6 +55,12 @@ module TimeRangeExtractor
 
       end_period.casecmp('pm') == 0 &&
         (start_t > end_t || (end_t == 12 && start_t < end_t))
+    end
+
+    def correct_dst_timezone(zone)
+      return zone unless DST_AFFECTED_TIME_ZONES.include?(zone)
+
+      @dst ? zone.tr('S', 'D') : zone.tr('D', 'S')
     end
 
     attr_reader :match_data

@@ -25,11 +25,12 @@ module TimeRangeExtractor
     def initialize(text, date: Date.current)
       @text = text
       @date = date
+      @dst = date.to_time.dst?
     end
 
     def call
       match = PATTERN.match(@text)
-      result = TimeZoneAdjustedMatchResult.new(match)
+      result = TimeZoneAdjustedMatchResult.new(match, dst: @dst)
       return nil unless result.valid?
 
       time_range_from(result)
