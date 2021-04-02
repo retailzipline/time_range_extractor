@@ -41,17 +41,24 @@ module TimeRangeExtractor
       start_time = time_from_string(match_result.start_time_string)
       end_time = time_from_string(match_result.end_time_string)
 
+      return nil unless start_time && end_time
+
       if start_time <= end_time
         start_time..end_time
       elsif start_time > end_time
         start_time..(end_time + 1.day)
       end
-    rescue ArgumentError
-      nil
     end
 
+    # Time.zone and DateTime parse invalid times differently. DateTime
+    # throws an ArgumentError while Time.zone returns nil.
+    #
+    # So, we rescue ArgumentError so that this method always returns nil
+    # when invalid values are passed
     def time_from_string(string)
       time_parser.parse(string, @date.to_time)
+    rescue ArgumentError
+      nil
     end
 
     # :reek:UtilityFunction so that we can optionally include ActiveSupport
