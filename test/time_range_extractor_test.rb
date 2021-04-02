@@ -30,6 +30,7 @@ class TimeRangeExtractorTest < Minitest::Test
   # rubocop:disable Style/WordArray
   [
     ['8-9am', ['8am', '9am']],
+    ['12-1pm', ['12pm', '1pm']],
     ['4pm-5pm', ['4pm', '5pm']],
     ['4pm - 5pm', ['4pm', '5pm']],
     ['4 pm - 5 pm', ['4pm', '5pm']],
