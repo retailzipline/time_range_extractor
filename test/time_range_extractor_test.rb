@@ -191,7 +191,9 @@ class TimeRangeExtractorTest < Minitest::Test
   [
     'to',
     'until',
-    '-'
+    '-', # hyphen
+    '—', # en dash
+    '–'  # em dash
   ].each do |separator|
     define_method "test_should_support_the_#{separator}_separator" do
       result = TimeRangeExtractor.call("8#{separator}9pm")
