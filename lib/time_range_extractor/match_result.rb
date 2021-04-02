@@ -52,9 +52,11 @@ module TimeRangeExtractor
     def force_start_period_to_am?
       start_t = start_time.to_i
       end_t = end_time.to_i
+      ends_in_pm = end_period.casecmp('pm') == 0
 
-      end_period.casecmp('pm') == 0 &&
-        (start_t > end_t || (end_t == 12 && start_t < end_t))
+      return false if ends_in_pm && start_t == 12
+
+      ends_in_pm && (start_t > end_t || (end_t == 12 && start_t < end_t))
     end
 
     def correct_dst_timezone(zone)
