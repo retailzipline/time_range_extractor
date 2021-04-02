@@ -97,6 +97,14 @@ class TimeRangeExtractorTest < Minitest::Test
     assert_equal time_parser.parse('1am') + 1.day, result.end
   end
 
+  def test_should_find_the_right_time_value_with_other_numbers
+    result = TimeRangeExtractor.call('Option 1: 12:00pm – 1:00pm EST')
+
+    refute_nil result
+    assert_equal time_parser.parse('12:00pm EST'), result.begin
+    assert_equal time_parser.parse('1:00pm EST'), result.end
+  end
+
   def test_should_return_nil_if_no_times_found
     result = TimeRangeExtractor.call('Call me today please')
 
